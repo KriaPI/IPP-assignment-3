@@ -1,0 +1,4 @@
+Checks:          'clang-diagnostic-*,clang-analyzer-*,cert-*,bugprone-*,cppcoreguidelines-*,modernize-*,hicpp-*,
+                  -modernize-use-trailing-return-type,-cert-dcl37-c,-cert-dcl51-cpp,-cert-dcl51-cpp,-bugprone-reserved-identifier'
+HeaderFilterRegex: ''
+FormatStyle:       none

@@ -1,0 +1,8 @@
+build
+CMakeUserPresets.json
+.vscode
+.cache
+testing
+vcpkg_installed
+CMakeFiles
+CMakeCache.txt
