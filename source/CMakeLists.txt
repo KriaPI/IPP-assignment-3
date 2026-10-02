@@ -3,13 +3,13 @@ add_executable(exercise1
 )
 
 add_executable(exercise2 
-    exercise-1/exercise2.cpp
+    exercise-2/exercise2.cpp
 )
 
 add_executable(exercise3 
-    exercise-1/exercise3.cpp
+    exercise-3/exercise3.cpp
 )
 
 add_executable(exercise4 
-    exercise-1/exercise4.cpp
+    exercise-4/exercise4.cpp
 )
