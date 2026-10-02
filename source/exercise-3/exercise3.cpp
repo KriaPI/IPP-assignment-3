@@ -82,9 +82,8 @@ SquareMatrix<T> multiplyMatrices(const SquareMatrix<T>& A,
     std::size_t j = 0;
     std::size_t k = 0;
 
-    // #pragma omp parallel default(private) shared(A, B, C, dim) num_threads(4)
-    // #pragma omp for schedule(static)
-    // #pragma opm for
+    #pragma omp parallel default(private) shared(A, B, C, dim) num_threads(4)
+    #pragma omp for schedule(static)
     for (i = 0; i < dim; i++) {
         for (j = 0; j < dim; j++) {
             C(i, j) = 0;
