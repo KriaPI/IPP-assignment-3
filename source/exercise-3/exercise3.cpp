@@ -9,14 +9,14 @@
 template <typename T>
 class SquareMatrix {
     std::size_t m_dimension{0};
-    T* m_data{};
+    std::vector<T> m_data{};
 
    public:
     SquareMatrix() = delete;
 
     /// @brief Initialize the matrix of size dimension x dimension with 0.
-    explicit SquareMatrix(std::size_t dimension) : m_dimension(dimension), m_data(new T[dimension * dimension]) {
-        
+    explicit SquareMatrix(std::size_t dimension) : m_dimension(dimension) {
+        m_data.resize(dimension * dimension);
         fill(0);
     }
 
@@ -28,7 +28,6 @@ class SquareMatrix {
     SquareMatrix(std::initializer_list<std::initializer_list<T>> initList) {
         auto dimension{initList.size()};
         m_dimension = dimension;
-        m_data = new T[dimension * dimension];
 
         std::size_t i = 0;
         for (const auto& row : initList) {
@@ -39,18 +38,10 @@ class SquareMatrix {
         }
     }
 
-    ~SquareMatrix() { delete[] m_data; }
+    ~SquareMatrix() = default;
 
-    SquareMatrix(SquareMatrix&& source) noexcept { moveFrom(source); }
-    SquareMatrix& operator=(SquareMatrix&& rhs) noexcept {
-        if (this == &rhs) {
-            return *this;
-        }
-
-        moveFrom(rhs);
-        return *this;
-    }
-
+    SquareMatrix(SquareMatrix&& source) = default;
+    SquareMatrix& operator=(SquareMatrix&& rhs) = default;
     SquareMatrix(SquareMatrix& other) = delete;
     SquareMatrix& operator=(const SquareMatrix&) = delete;
 
@@ -80,7 +71,7 @@ class SquareMatrix {
 
     /// @brief Assign all elements in the matrix to value.
     void fill(T value) {
-        std::fill_n(m_data, size(), value);
+        std::fill_n(m_data.begin(), size(), value);
     }
 
     /// @brief Assign all elements on the diagonal in the matrix to value.
@@ -115,15 +106,15 @@ void multiplyMatricesCase0(const SquareMatrix<T>& A, const SquareMatrix<T>& B, S
 }
 
 template <typename T>
-void multiplyMatricesCase1(const SquareMatrix<T>& A, const SquareMatrix<T>& B, SquareMatrix<T>& C) {
-    auto dim = A.dimension();
+void multiplyMatricesCase1(const SquareMatrix<T>* A, const SquareMatrix<T>*  B, SquareMatrix<T>* C) {
+    auto dim = A->dimension();
     
     #pragma omp parallel for schedule(static) shared(A, B, C, dim) num_threads(4) 
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
-            C(i, j) = 0;
+            (*C)(i, j) = 0;
             for (std:: size_t k = 0; k < dim; k++) {
-                C(i, j) += A(i, k) * B(k, j);
+                (*C)(i, j) += (*A)(i, k) * (*B)(k, j);
             }
         }
     }
@@ -182,7 +173,7 @@ int main() {
     //timeIt([&] () {multiplyMatricesCase2(A, B, C);});
     //timeIt([&] () {multiplyMatricesCase3(A, B, C);});
 
-    multiplyMatricesCase1(A, B, C);
-    //std::cout << C;
+    multiplyMatricesCase1(&A, &B, &C);
+    std::cout << C;
     return 0;
 }
