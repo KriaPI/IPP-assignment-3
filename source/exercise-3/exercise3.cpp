@@ -5,6 +5,7 @@
 #include <utility>
 #include <chrono>
 #include <format>
+#include "omp.h"
 
 template <typename T>
 class SquareMatrix {
@@ -106,7 +107,6 @@ void multiplyMatricesCase0(const SquareMatrix<T>& A, const SquareMatrix<T>& B, S
     
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
-            C(i, j) = 0;
             for (std:: size_t k = 0; k < dim; k++) {
                 C(i, j) += A(i, k) * B(k, j);
             }
@@ -121,7 +121,6 @@ void multiplyMatricesCase1(const SquareMatrix<T>& A, const SquareMatrix<T>& B, S
     #pragma omp parallel for schedule(static) shared(A, B, C, dim) num_threads(4) 
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
-            C(i, j) = 0;
             for (std:: size_t k = 0; k < dim; k++) {
                 C(i, j) += A(i, k) * B(k, j);
             }
@@ -137,7 +136,6 @@ void multiplyMatricesCase2(const SquareMatrix<T>& A, const SquareMatrix<T>& B, S
     #pragma omp for schedule(static) collapse(2)
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
-            C(i, j) = 0;
             for (std:: size_t k = 0; k < dim; k++) {
                 C(i, j) += A(i, k) * B(k, j);
             }
@@ -149,12 +147,13 @@ template <typename T>
 void multiplyMatricesCase3(const SquareMatrix<T>& A, const SquareMatrix<T>& B, SquareMatrix<T>& C) {
     auto dim = A.dimension();
     
-    #pragma omp parallel default(private) shared(A, B, C, dim) num_threads(4)
-    #pragma omp for schedule(static) collapse(2)
+    
+    #pragma omp parallel default(private) shared(std::cout, A, B, C, dim)
+    #pragma omp for schedule(static) collapse(3)
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
-            C(i, j) = 0;
             for (std:: size_t k = 0; k < dim; k++) {
+                #pragma omp atomic
                 C(i, j) += A(i, k) * B(k, j);
             }
         }
@@ -170,19 +169,19 @@ void timeIt(T function) {
 }
 
 int main() {
-    constexpr std::size_t dimension = 10;
+    constexpr std::size_t dimension = 1000;
     SquareMatrix<int> A(dimension);
     SquareMatrix<int> B (dimension);
     SquareMatrix<int> C (dimension);
     A.fillDiagonal(2);
     B.fillDiagonal(2);
 
-    //timeIt([&] () {multiplyMatricesCase0(A, B, C);});
-    //timeIt([&] () {multiplyMatricesCase1(A, B, C);});
-    //timeIt([&] () {multiplyMatricesCase2(A, B, C);});
-    //timeIt([&] () {multiplyMatricesCase3(A, B, C);});
+    timeIt([&] () {multiplyMatricesCase0(A, B, C);});
+    timeIt([&] () {multiplyMatricesCase1(A, B, C);});
+    timeIt([&] () {multiplyMatricesCase2(A, B, C);});
+    timeIt([&] () {multiplyMatricesCase3(A, B, C);});
 
-    multiplyMatricesCase1(A, B, C);
+    //multiplyMatricesCase3(A, B, C);
     //std::cout << C;
     return 0;
 }
