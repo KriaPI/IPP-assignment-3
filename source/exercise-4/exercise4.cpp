@@ -99,7 +99,7 @@ class SquareMatrix {
     }
 };
 
-void rowOrientedBackwardsSubstitution(SquareMatrix<int>& A, std::vector<int>& b, std::vector<int>& x) {
+void rowOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
     int n = x.size();
 
     for (int row = n - 1; row >= 0; row--) {
@@ -108,6 +108,20 @@ void rowOrientedBackwardsSubstitution(SquareMatrix<int>& A, std::vector<int>& b,
             x[row] -= A(row, col) * x[col];
         }
         x[row] /= A(row, row);
+    }
+}
+
+void columnOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
+    int n = x.size();
+
+    for (int row = 0; row < n; row++)
+    {
+        x[row] = b[row];
+    }
+    for (int col = n-1; col >= 0; col--) {
+        x[col] /= A(col, col);
+        for (int row = 0; row < col; row++)
+        x[row] -= A(row, col) * x[col];
     }
 }
 
@@ -122,7 +136,7 @@ int main() {
     std::vector<int> b{3, 1, 0};
     std::vector<int> x(3);
 
-    rowOrientedBackwardsSubstitution(A, b, x);
+    columnOrientedBackwardsSubstitution(A, b, x);
 
     std::cout << std::format("Solution: [{}, {}, {}]\n", x[0], x[1], x[2]);
 
