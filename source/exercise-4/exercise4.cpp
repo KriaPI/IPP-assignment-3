@@ -99,11 +99,16 @@ class SquareMatrix {
     }
 };
 
+/// @brief Solve the upper-triangular matrix equation using backward substitution.
+/// @param A The coefficient matrix.
+/// @param b The right hand side of the equation.
+/// @param x The solution
 void rowOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
     int n = x.size();
 
     for (int row = n - 1; row >= 0; row--) {
         x[row] = b[row];
+        // TODO: parallelize this loop using omp for and a reduction clause
         for (int col = row + 1; col < n; col++) {
             x[row] -= A(row, col) * x[col];
         }
@@ -121,7 +126,7 @@ void columnOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::
     for (int col = n-1; col >= 0; col--) {
         x[col] /= A(col, col);
         for (int row = 0; row < col; row++)
-        x[row] -= A(row, col) * x[col];
+            x[row] -= A(row, col) * x[col];
     }
 }
 
