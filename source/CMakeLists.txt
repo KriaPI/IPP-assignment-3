@@ -1,9 +1,11 @@
 add_executable(exercise1 exercise-1/exercise1.cpp)
 add_executable(exercise2 exercise-2/exercise2.cpp)
 add_executable(exercise3 exercise-3/exercise3.cpp)
-add_executable(exercise4 exercise-4/exercise4.cpp)
+add_executable(exercise4Column exercise-4/exercise4Column.cpp)
+add_executable(exercise4Row exercise-4/exercise4Row.cpp)
 
 target_link_libraries(exercise1 PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(exercise2 PRIVATE OpenMP::OpenMP_CXX)
 target_link_libraries(exercise3 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(exercise4 PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(exercise4Column PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(exercise4Row PRIVATE OpenMP::OpenMP_CXX)

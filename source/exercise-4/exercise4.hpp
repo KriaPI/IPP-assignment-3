@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
@@ -112,71 +114,6 @@ class SquareMatrix {
     }
 };
 
-/// @brief Solve the upper-triangular matrix equation using backward substitution.
-/// @param A The coefficient matrix.
-/// @param b The right hand side of the equation.
-/// @param x The solution
-void rowOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
-    int n = x.size();
-
-    for (int row = n - 1; row >= 0; row--) {
-        x[row] = b[row];
-        // TODO: parallelize this loop using omp for and a reduction clause
-        for (int col = row + 1; col < n; col++) {
-            x[row] -= A(row, col) * x[col];
-        }
-        x[row] /= A(row, row);
-    }
-}
-
-void rowOrientedBackwardsSubstitutionParallel(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
-    int n = x.size();
-
-    for (int row = n - 1; row >= 0; row--) {
-        x[row] = b[row];
-        // TODO: parallelize this loop using omp for and a reduction clause
-
-        auto toRemove {0};
-
-        #pragma omp parallel for default(private) shared(A, x, row, n) reduction(+:toRemove) schedule(runtime)
-        for (int col = row + 1; col < n; col++) {
-            toRemove += A(row, col) * x[col];
-        }
-
-        x[row] -= toRemove;
-        x[row] /= A(row, row);
-    }
-}
-
-void columnOrientedBackwardsSubstitution(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
-    int n = x.size();
-
-    for (int row = 0; row < n; row++)
-    {
-        x[row] = b[row];
-    }
-    for (int col = n-1; col >= 0; col--) {
-        x[col] /= A(col, col);
-        for (int row = 0; row < col; row++)
-            x[row] -= A(row, col) * x[col];
-    }
-}
-
-void columnOrientedBackwardsSubstitutionParallel(const SquareMatrix<int>& A, const std::vector<int>& b, std::vector<int>& x) {
-    int n = x.size();
-
-    // TODO: figure out how to parallelize and do it.
-
-    for (int row = 0; row < n; row++)
-    {
-        x[row] = b[row];
-    }
-    for (int col = n-1; col >= 0; col--) {
-        x[col] /= A(col, col);
-        for (int row = 0; row < col; row++)
-            x[row] -= A(row, col) * x[col];
-    }
-}
 
 template <typename T>
 void timeIt(T function) {
@@ -184,48 +121,4 @@ void timeIt(T function) {
     function();
     std::chrono::duration<double> duration {std::chrono::system_clock::now() - start};
     std::cout << std::format("Duration: {:.8f} seconds\n", duration.count());
-}
-
-void benchmark(int variableCount) {
-    SquareMatrix<int> A (variableCount);
-    A.fillUpperTriangle(1);
-
-    std::vector<int> b(variableCount);
-    std::iota(b.rbegin(), b.rend(), 1);
-    std::vector<int> x(variableCount);
-
-    int maxThreads {4};
-    std::vector<int> threads (maxThreads);
-    std::iota(threads.begin(), threads.end(), 1);
-
-    for (auto threadCount: threads) {
-        std::cout << std::format("Thread count: {}\n", threadCount);
-        omp_set_num_threads(threadCount);
-        timeIt( [&] () { rowOrientedBackwardsSubstitutionParallel(A, b, x);});
-    }
-}
-
-
-int main() {
-    int variableCount {20};
-
-    SquareMatrix<int> A (variableCount);
-    A.fillUpperTriangle(1);
-
-    std::vector<int> b(variableCount);
-    std::iota(b.rbegin(), b.rend(), 1);
-    std::vector<int> x(variableCount);
-
-    
-    columnOrientedBackwardsSubstitution(A, b, x);
-    
-    std::cout << A << "\n";
-    for (auto i: x) {
-       std::cout << std::format("{} ", i);
-    }
-    std::cout << "\n";
-
-    // OMP_SCHEDULE="dynamic" ./build/source/exercise4
-
-    return 0;
 }
