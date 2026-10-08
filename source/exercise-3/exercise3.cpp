@@ -118,7 +118,7 @@ template <typename T>
 void multiplyMatricesCase1(const SquareMatrix<T>& A, const SquareMatrix<T>& B, SquareMatrix<T>& C) {
     auto dim = A.dimension();
     
-    #pragma omp parallel for schedule(static) shared(A, B, C, dim) num_threads(4) 
+    #pragma omp parallel for schedule(static) 
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
             for (std:: size_t k = 0; k < dim; k++) {
@@ -132,7 +132,7 @@ template <typename T>
 void multiplyMatricesCase2(const SquareMatrix<T>& A, const SquareMatrix<T>& B, SquareMatrix<T>& C) {
     auto dim = A.dimension();
     
-    #pragma omp parallel default(private) shared(A, B, C, dim) num_threads(4)
+    #pragma omp parallel 
     #pragma omp for schedule(static) collapse(2)
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
@@ -148,7 +148,7 @@ void multiplyMatricesCase3(const SquareMatrix<T>& A, const SquareMatrix<T>& B, S
     auto dim = A.dimension();
     
     
-    #pragma omp parallel default(private) shared(std::cout, A, B, C, dim)
+    #pragma omp parallel
     #pragma omp for schedule(static) collapse(3)
     for (std::size_t i = 0; i < dim; i++) {
         for (std::size_t j = 0; j < dim; j++) {
@@ -176,7 +176,7 @@ int main() {
     A.fillDiagonal(2);
     B.fillDiagonal(2);
 
-    timeIt([&] () {multiplyMatricesCase0(A, B, C);});
+    //timeIt([&] () {multiplyMatricesCase0(A, B, C);});
     timeIt([&] () {multiplyMatricesCase1(A, B, C);});
     timeIt([&] () {multiplyMatricesCase2(A, B, C);});
     timeIt([&] () {multiplyMatricesCase3(A, B, C);});
