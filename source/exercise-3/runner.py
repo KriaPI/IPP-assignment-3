@@ -52,9 +52,9 @@ print(resultCase2)
 print(resultCase3)
 
 fig, ax = plt.subplots()
-ax.plot(threadCounts, resultCase1, label="Only outer loop")
-ax.plot(threadCounts, resultCase2, label="Outer loop and first inner loop")
-ax.plot(threadCounts, resultCase3, label="All loops")
+ax.plot(threadCounts, resultCase1, label="Outermost loop parallelized")
+ax.plot(threadCounts, resultCase2, label="Outer two loops parallelized")
+ax.plot(threadCounts, resultCase3, label="All loops parallelized")
 
 box = ax.get_position()
 ax.set_position([box.x0, box.y0 + box.height * 0.1,
