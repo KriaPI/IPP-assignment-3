@@ -169,7 +169,7 @@ void timeIt(T function) {
 }
 
 int main() {
-    constexpr std::size_t dimension = 1000;
+    constexpr std::size_t dimension = 500;
     SquareMatrix<int> A(dimension);
     SquareMatrix<int> B (dimension);
     SquareMatrix<int> C (dimension);

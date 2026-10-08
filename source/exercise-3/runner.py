@@ -27,7 +27,7 @@ program = "exercise3"
 
 compile(program)
 
-threadCounts = np.arange(2, 3 + 1, 1)
+threadCounts = np.arange(2, 16 + 1, 1)
 
 resultCase1 = []
 resultCase2 = []
@@ -37,7 +37,7 @@ for threadCount in threadCounts:
     resultCase1iter = []
     resultCase2iter = []
     resultCase3iter = []
-    for i in range(1):
+    for i in range(5):
         results = runAndGetResult(program, str(threadCount))
         resultCase1iter.append(results[0])
         resultCase2iter.append(results[1])

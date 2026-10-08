@@ -36,7 +36,7 @@ for program in programNames:
     print("------------------------------------")
     for schedule in schedules:
         runs = []
-        for i in range(1):
+        for i in range(3):
             runs.append(runAndGetResult(program, schedule))
         average = np.mean(runs)
         print(f"Schedule: {schedule} duration: {average.round(3)}")
