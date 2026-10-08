@@ -27,7 +27,7 @@ program = "exercise3"
 
 compile(program)
 
-threadCounts = np.arange(2, 16 + 1, 1)
+threadCounts = np.arange(2, 3 + 1, 1)
 
 resultCase1 = []
 resultCase2 = []
@@ -46,10 +46,6 @@ for threadCount in threadCounts:
     resultCase2.append(np.mean(resultCase2iter))
     resultCase3.append(np.mean(resultCase3iter))
 
-
-print(resultCase1)
-print(resultCase2)
-print(resultCase3)
 
 fig, ax = plt.subplots()
 ax.plot(threadCounts, resultCase1, label="Outermost loop parallelized")
